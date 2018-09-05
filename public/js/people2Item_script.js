@@ -6,8 +6,8 @@ var totales_dic = JSON.parse(localStorage.getItem('localTotales'));
 
 localStorage.setItem('localDirPer', JSON.stringify({}));
 var ItemDiccJ = {};
-var cant_peopleChecked = 0;
-
+var cant_peopleChecked = [];
+var num_item = [0];
 // FUNCIONES
 startItemDiccJ();
 CheckPeople();
@@ -55,8 +55,9 @@ function CheckPeople() { // crea lista de checkboxs con los nombres de las perso
 function CheckItems() { // crea listbox con los items
   d1 = document.getElementById('items');
   for (i = 0; i < Object.keys(ItemDiccJ).length; i++) {
+    cant_peopleChecked.push(0);
     nameItem = Object.keys(ItemDiccJ)[i];
-    html_code = `<option id="opciones" value="${nameItem}">${nameItem}</option>`;
+    html_code = `<option id="opciones_${i}" value="${nameItem}">${nameItem}</option>`;
     d1.insertAdjacentHTML('beforeend', html_code);
   }
 }
@@ -67,12 +68,12 @@ function peopleChecked(element) { // activa el campo del porcentaje de una perso
   d1 = document.getElementById(id_texto);
   if (element.checked) {
     document.getElementById(id_texto).disabled = false;
-    cant_peopleChecked++;
-    d1.value = 100 / cant_peopleChecked;
+    cant_peopleChecked[num_item]++;
+    d1.value = 100 / cant_peopleChecked[num_item];
   } else {
     d1.value = null;
     document.getElementById(id_texto).disabled = true;
-    cant_peopleChecked--;
+    cant_peopleChecked[num_item]--;
   }
   //  ciclo que cambie los porcentajes
   for (i = 0; i < Object.keys(localPeople).length; i++) {
@@ -80,9 +81,11 @@ function peopleChecked(element) { // activa el campo del porcentaje de una perso
     if (document.getElementById(id_check).checked) {
       id_texto = "idText_" + i;
       d1 = document.getElementById(id_texto);
-      d1.value = 100 / cant_peopleChecked;
+      d1.value = 100 / cant_peopleChecked[num_item];
     }
   }
+  console.log(cant_peopleChecked);
+  console.log(num_item);
 }
 
 function actualizarChecks() { // activa los checkboxs de las personas que corresponden al item que sale en el listbox de items
@@ -224,7 +227,7 @@ $(document).ready(function() { // detecta cuando hay un cambio en los checkboxs 
 });
 
 $(".form-control.one").change(function() { // atualiza las perfonas cuando se cambia de item en la listbox
-  cant_peopleChecked = 0;
+  num_item = parseFloat(select.options[select.selectedIndex].id.split("_").slice(-1));
   actualizarChecks();
 });
 
